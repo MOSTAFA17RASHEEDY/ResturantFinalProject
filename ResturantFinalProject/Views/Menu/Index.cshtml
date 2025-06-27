@@ -1,0 +1,206 @@
+﻿@model ResturantFinalProject.ViewModels.MenuDisplayViewModel
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = "Menu";
+}
+
+<!-- Custom Styles -->
+<style>
+    .btn-sm-custom {
+        min-width: 80px; /* Reduced width for View Details */
+        padding: 0.25rem 0.5rem; /* Adjust padding */
+    }
+
+    .btn-container {
+        display: flex;
+        gap: 10px; /* Space between buttons */ 
+        margin-top: 0.5rem;
+    }
+</style>
+
+<!-- Navbar & Hero Start -->
+<div class="container-xxl py-5 bg-dark hero-header mb-5">
+    <div class="container text-center my-5 pt-5 pb-4">
+        <h1 class="display-3 text-white mb-3 animated slideInDown">Food Menu</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-center text-uppercase">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item text-white active" aria-current="page">Menu</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- Navbar & Hero End -->
+<!-- Menu Start -->
+<div class="container-xxl py-5">
+    <div class="container justify-content-center align-items-center">
+        <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+            <h5 class="section-title ff-secondary text-center text-primary fw-normal">Food Menu</h5>
+            <h1 class="mb-5">Most Popular Items</h1>
+        </div>
+
+        <!-- Search and Filter Form -->
+        <div class="d-flex justify-content-center">
+        <form asp-action="Index" method="get" class="mb-5 w-75 ">
+            <div class="input-group">
+                <input type="text" name="searchTerm" class="form-control" placeholder="Search items..." value="@Model.SearchTerm" />
+                <select name="categoryId" class="form-select" asp-items="@(new SelectList(Model.Categories.Select(c => new { c.Id, c.Name }), "Id", "Name", Model.SelectedCategoryId))">
+                    <option value="">All Categories</option>
+                </select>
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+        </form>
+        </div>
+        <!-- Happy Hour Notification -->
+        @if (Model.IsHappyHour)
+        {
+            <div class="alert alert-success text-center mb-4">Happy Hour (3-5 PM): 20% off all items!</div>
+        }
+
+
+        <!-- Tab Navigation -->
+        <div class="tab-class text-center wow fadeInUp" data-wow-delay="0.1s">
+            <ul class="nav nav-pills d-inline-flex justify-content-center border-bottom mb-5">
+                <li class="nav-item">
+                    <a class="d-flex align-items-center text-start mx-3 ms-0 pb-3 @(Model.SelectedCategoryId == null ? "active" : "")" data-bs-toggle="pill" href="#tab-all">
+                        <i class="fa fa-coffee fa-2x text-primary"></i>
+                        <div class="ps-3">
+                            <small class="text-body">All</small>
+                            <h6 class="mt-n1 mb-0">Items</h6>
+                        </div>
+                    </a>
+                </li>
+                @foreach (var category in Model.Categories)
+                {
+                    <li class="nav-item">
+                        <a class="d-flex align-items-center text-start mx-3 pb-3 @(Model.SelectedCategoryId == category.Id ? "active" : "")" data-bs-toggle="pill" href="#tab-@category.Id">
+                            <i class="fa fa-hamburger fa-2x text-primary"></i>
+                            <div class="ps-3">
+                                <small class="text-body">Category</small>
+                                <h6 class="mt-n1 mb-0">@category.Name</h6>
+                            </div>
+                        </a>
+                    </li>
+                }
+            </ul>
+
+            <!-- Tab Content -->
+            <div class="tab-content">
+                <!-- All Items Tab -->
+                <div id="tab-all" class="tab-pane fade @(Model.SelectedCategoryId == null ? "show active" : "") p-0">
+                    <div class="row g-4  ">
+                        @foreach (var category in Model.Categories)
+                        {
+                            foreach (var item in category.MenuItems)
+                            {
+                                <div class="ml-4 col-lg-6 ">
+                                    <div class="d-flex align-items-center w-75">
+                                        <img class="flex-shrink-0 img-fluid rounded" src="@(item.ImageUrl ?? "/img/menu-placeholder.jpg")" alt="@item.Name" style="width: 80px;">
+                                        <div class="w-100 d-flex flex-column text-start ps-4">
+                                            <h5 class="d-flex justify-content-between border-bottom pb-2">
+                                                <span>@item.Name</span>
+                                                <span class="text-primary">
+                                                    @if (Model.IsHappyHour)
+                                                    {
+                                                        <span class="text-decoration-line-through text-muted">@item.Price.ToString("C")</span>
+                                                        <span>@item.DiscountedPrice.ToString("C")</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span>@item.Price.ToString("C")</span>
+                                                    }
+                                                </span>
+                                            </h5>
+                                            <small class="fst-italic">
+                                                Prep Time: @item.PreparationTimeMinutes minutes
+                                                <br />
+                                                @(item.IsAvailable ? "Available" : "Unavailable")
+                                            </small>
+                                            <div class="btn-container">
+                                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-primary btn-sm-custom">View Details</a>
+                                                <form asp-controller="Cart" asp-action="Add" asp-route-quantity="1" method="post" class="d-inline">
+                                                    <input type="hidden" name="itemId" value="@item.Id" />
+                                                    <button type="submit" class="btn btn-sm btn-success btn-sm-custom">Add to Order</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        @if (!Model.Categories.Any() || !Model.Categories.SelectMany(c => c.MenuItems).Any())
+                        {
+                            <div class="col-12 text-center">
+                                <p>No items available. Please check back later!</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Category Tabs -->
+                @foreach (var category in Model.Categories)
+                {
+                    <div id="tab-@category.Id" class="tab-pane fade @(Model.SelectedCategoryId == category.Id ? "show active" : "") p-0">
+                        <div class="row g-4">
+                            @foreach (var item in category.MenuItems)
+                            {
+                                <div class="col-lg-6">
+                                    <div class="d-flex align-items-center">
+                                        <img class="flex-shrink-0 img-fluid rounded" src="@(item.ImageUrl ?? "/img/menu-placeholder.jpg")" alt="@item.Name" style="width: 80px;">
+                                        <div class="w-100 d-flex flex-column text-start ps-4">
+                                            <h5 class="d-flex justify-content-between border-bottom pb-2">
+                                                <span>@item.Name</span>
+                                                <span class="text-primary">
+                                                    @if (Model.IsHappyHour)
+                                                    {
+                                                        <span class="text-decoration-line-through text-muted">@item.Price.ToString("C")</span>
+                                                        <span>@item.DiscountedPrice.ToString("C")</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span>@item.Price.ToString("C")</span>
+                                                    }
+                                                </span>
+                                            </h5>
+                                            <small class="fst-italic">
+                                                Prep Time: @item.PreparationTimeMinutes minutes
+                                                <br />
+                                                @(item.IsAvailable ? "Available" : "Unavailable")
+                                            </small>
+                                            <div class="btn-container">
+                                                <a href="/Menu/Details/@item.Id" class="btn btn-sm btn-primary btn-sm-custom">View Details</a>
+                                                <form asp-controller="Cart" asp-action="Add" method="post" class="d-inline">
+                                                    <input type="hidden" name="itemId" value="@item.Id" />
+                                                    <button type="submit" class="btn btn-sm btn-success btn-sm-custom">Add to Order</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            @if (!category.MenuItems.Any())
+                            {
+                                <div class="col-12 text-center">
+                                    <p>No items available in this category.</p>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Menu End -->
+@section Scripts {
+    <script>
+        // Ensure Bootstrap tabs work with dynamic content
+        $(document).ready(function () {
+            $('.nav-pills a').on('click', function (e) {
+                e.preventDefault();
+                $(this).tab('show');
+            });
+        });
+    </script>
+}

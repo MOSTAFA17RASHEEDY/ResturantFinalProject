@@ -1,0 +1,157 @@
+﻿@using ResturantFinalProject.ViewModels
+@using ResturantFinalProject.Models
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+
+<!-- Bootstrap Modal -->
+<div class="modal fade" id="cartAndOrdersModal" tabindex="-1" aria-labelledby="cartAndOrdersModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="cartAndOrdersModalLabel" style="font-family: 'Pacifico', cursive;">Cart & Orders</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Nav Tabs -->
+                <ul class="nav nav-tabs" id="cartOrdersTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="cart-tab" data-bs-toggle="tab" data-bs-target="#cart" type="button" role="tab" aria-controls="cart" aria-selected="true">Cart</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="orders-tab" data-bs-toggle="tab" data-bs-target="#orders" type="button" role="tab" aria-controls="orders" aria-selected="false">Orders</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="kitchen-tab" data-bs-toggle="tab" data-bs-target="#kitchen" type="button" role="tab" aria-controls="kitchen" aria-selected="false">Kitchen Updates</button>
+                    </li>
+                </ul>
+                <!-- Tab Content -->
+                <div class="tab-content" id="cartOrdersTabsContent">
+                    <!-- Cart Tab -->
+                    <div class="tab-pane fade show active" id="cart" role="tabpanel" aria-labelledby="cart-tab">
+                        <div id="cart-content">
+                            <!-- Cart content loaded dynamically via AJAX -->
+                            <p>Loading cart...</p>
+                        </div>
+                    </div>
+                    <!-- Orders Tab -->
+                    <div class="tab-pane fade" id="orders" role="tabpanel" aria-labelledby="orders-tab">
+                        <h6 class="mt-3">Your Orders</h6>
+                        @{
+                            var orders = ViewData["UserOrders"] as IEnumerable<OrderSummaryViewModel> ?? new List<OrderSummaryViewModel>();
+                            var activeOrder = orders.FirstOrDefault(o => o.CanCancel);
+                        }
+                        @if (activeOrder != null)
+                        {
+                            <div class="card mb-3">
+                                <div class="card-header bg-success text-white">
+                                    Active Order (#@activeOrder.Id)
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Order Time:</strong> @activeOrder.OrderTime.ToString("g")</p>
+                                    <p><strong>Status:</strong> @activeOrder.StatusDisplay</p>
+                                    <p><strong>Type:</strong> @activeOrder.OrderTypeDisplay</p>
+                                    <p><strong>Total:</strong> @activeOrder.Total.ToString("C")</p>
+                                    @if (activeOrder.OrderType == OrderType.Delivery)
+                                    {
+                                        <p><strong>Delivery Address:</strong> @activeOrder.DeliveryAddress</p>
+                                        <p><strong>Estimated Delivery:</strong> @activeOrder.EstimatedDeliveryTime?.ToString("g")</p>
+                                    }
+                                    @if (activeOrder.CanCancel)
+                                    {
+                                        <form asp-controller="Order" asp-action="Cancel" method="post" class="d-inline">
+                                            <input type="hidden" name="id" value="@activeOrder.Id" />
+                                            <button type="submit" class="btn btn-danger btn-sm">Cancel Order</button>
+                                        </form>
+                                        <a href="/Order/Edit/@activeOrder.Id" class="btn btn-warning btn-sm ms-2">Update Order</a>
+                                    }
+                                    else
+                                    {
+                                        <p class="text-muted">This order cannot be cancelled or updated.</p>
+                                    }
+                                </div>
+                            </div>
+                        }
+                        @if (orders.Any())
+                        {
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Order Time</th>
+                                        <th>Status</th>
+                                        <th>Type</th>
+                                        <th>Total</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var order in orders)
+                                    {
+                                        <tr>
+                                            <td>@order.Id</td>
+                                            <td>@order.OrderTime.ToString("g")</td>
+                                            <td>@order.StatusDisplay</td>
+                                            <td>@order.OrderTypeDisplay</td>
+                                            <td>@order.Total.ToString("C")</td>
+                                            <td>
+                                                <a href="/Order/Details/@order.Id" class="btn btn-sm btn-primary">Details</a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <p class="text-muted mt-3">No orders found.</p>
+                        }
+                    </div>
+                    <!-- Kitchen Updates Tab -->
+                    <div class="tab-pane fade" id="kitchen" role="tabpanel" aria-labelledby="kitchen-tab">
+                        <h6 class="mt-3">Kitchen Updates</h6>
+                        <div id="kitchen-updates">
+                            @if (activeOrder != null)
+                            {
+                                <p><strong>Order #@activeOrder.Id:</strong> <span id="status-message">@ViewData["StatusMessage"]</span></p>
+                            }
+                            else
+                            {
+                                <p class="text-muted">No active order.</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Poll for kitchen status updates every 10 seconds if there's an active order
+        $(document).ready(function () {
+            var activeOrderId = @activeOrder?.Id;
+            if (activeOrderId) {
+                setInterval(function () {
+                    $.get('/Order/GetStatusMessage/' + activeOrderId, function (data) {
+                        $('#status-message').text(data);
+                    });
+                }, 10000);
+            }
+            // Load cart content dynamically when cart tab is shown
+            $('#cart-tab').on('shown.bs.tab', function () {
+                $.get('/Cart/GetCart', function (data) {
+                    $('#cart-content').html(data);
+                });
+            });
+            // Load cart content immediately if cart tab is active
+            if ($('#cart-tab').hasClass('active')) {
+                $.get('/Cart/GetCart', function (data) {
+                    $('#cart-content').html(data);
+                });
+            }
+        });
+    </script>
+}

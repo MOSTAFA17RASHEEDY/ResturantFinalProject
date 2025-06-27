@@ -1,0 +1,105 @@
+﻿@model ResturantFinalProject.ViewModels.OrderIndexViewModel
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    ViewData["Title"] = "Orders Dashboard";
+}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <h1 class="h3 mb-2 text-gray-800">Orders Dashboard</h1>
+    <p class="mb-4">View and manage all orders in the system.</p>
+
+    <!-- Filter Card -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Filter Orders</h6>
+        </div>
+        <div class="card-body">
+            <form asp-action="IndexDashboard" method="get" class="form-inline">
+                <div class="form-group mb-2 mr-3">
+                    <label asp-for="FilterStatus" class="mr-2"></label>
+                    <select asp-for="FilterStatus" asp-items="@Model.StatusOptions" class="form-control"></select>
+                </div>
+                <button type="submit" class="btn btn-primary mb-2">Apply Filter</button>
+                <a asp-action="IndexDashboard" class="btn btn-secondary mb-2 ml-2">Clear Filter</a>
+            </form>
+        </div>
+    </div>
+
+    <!-- Orders Table Card -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Orders</h6>
+        </div>
+        <div class="card-body">
+            @if (Model.Orders.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered text-center align-middle" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.Orders.First().Id)</th>
+                                <th>@Html.DisplayNameFor(model => model.Orders.First().OrderTime)</th>
+                                <th>@Html.DisplayNameFor(model => model.Orders.First().StatusDisplay)</th>
+                                <th>@Html.DisplayNameFor(model => model.Orders.First().OrderTypeDisplay)</th>
+                                <th>@Html.DisplayNameFor(model => model.Orders.First().Total)</th>
+                                <th>@Html.DisplayNameFor(model => model.Orders.First().ItemCount)</th>
+                                <th>@Html.DisplayNameFor(model => model.Orders.First().EstimatedDeliveryTime)</th>
+                                <th>@Html.DisplayNameFor(model => model.Orders.First().DeliveryAddress)</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in Model.Orders)
+                            {
+                                <tr>
+                                    <td>@order.Id</td>
+                                    <td>@order.OrderTime.ToString("MM/dd/yyyy HH:mm")</td>
+                                    <td>@order.StatusDisplay</td>
+                                    <td>@order.OrderTypeDisplay</td>
+                                    <td>@order.Total.ToString("C")</td>
+                                    <td>@order.ItemCount</td>
+                                    <td>@(order.EstimatedDeliveryTime?.ToString("MM/dd/yyyy HH:mm") ?? "N/A")</td>
+                                    <td>@(order.DeliveryAddress ?? "N/A")</td>
+                                    <td>
+                                        <a asp-action="Details" asp-route-id="@order.Id" class="btn btn-outline-primary btn-sm mx-1 mb-2 w-100">View</a>
+                                        <a asp-action="EditStatus" asp-route-id="@order.Id" class="btn btn-primary btn-sm mx-1 mb-2 w-100">Edit</a>
+                                        <a asp-action="Delete" asp-route-id="@order.Id" class="btn btn-danger btn-sm mx-1 w-100">Delete</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+                            <a class="page-link" asp-action="IndexDashboard" asp-route-page="@(ViewBag.CurrentPage - 1)" asp-route-filterStatus="@ViewBag.FilterStatus">Previous</a>
+                        </li>
+                        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                                <a class="page-link" asp-action="IndexDashboard" asp-route-page="@i" asp-route-filterStatus="@ViewBag.FilterStatus">@i</a>
+                            </li>
+                        }
+                        <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+                            <a class="page-link" asp-action="IndexDashboard" asp-route-page="@(ViewBag.CurrentPage + 1)" asp-route-filterStatus="@ViewBag.FilterStatus">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            }
+            else
+            {
+                <div class="alert alert-info mt-4">@Model.Message</div>
+            }
+        </div>
+    </div>
+
+</div>
+<!-- /.container-fluid -->

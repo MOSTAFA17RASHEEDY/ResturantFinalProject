@@ -1,0 +1,53 @@
+﻿@model ResturantFinalProject.ViewModels.OrderStatusUpdateViewModel
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    ViewData["Title"] = "Edit Order Status";
+}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <h1 class="h3 mb-2 text-gray-800">Edit Order Status</h1>
+    <p class="mb-4">Update the status of the selected order.</p>
+
+    <!-- Edit Form Card -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Order #@Model.OrderId</h6>
+        </div>
+        <div class="card-body">
+            <form asp-action="EditStatus" method="post">
+                <input type="hidden" asp-for="OrderId" />
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="form-group">
+                    <label asp-for="CurrentStatus" class="control-label"></label>
+                    <input asp-for="CurrentStatus" value="@Model.Status" class="form-control" readonly />
+                </div>
+
+
+                <div class="form-group">
+                    <label asp-for="Status" class="control-label"></label>
+                    <select asp-for="Status" asp-items="@Model.StatusOptions" class="form-control"></select>
+                    <span asp-validation-for="Status" class="text-danger"></span>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="form-group text-center mt-4">
+                    <button type="submit" class="btn btn-primary mx-2">Save</button>
+                    <a asp-action="IndexDashboard" class="btn btn-secondary mx-2">Back to List</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+<!-- /.container-fluid -->
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+}

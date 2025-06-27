@@ -1,0 +1,128 @@
+﻿@model ResturantFinalProject.ViewModels.OrderCreateViewModel
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using ResturantFinalProject.Models
+
+@{
+    ViewData["Title"] = "Edit Order";
+}
+
+<!-- Hero Section -->
+<div class="container-xxl py-5 bg-dark hero-header mb-5">
+    <div class="container text-center my-5 pt-5 pb-4">
+        <h1 class="display-3 text-white mb-3 animated slideInDown">Edit Order</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-center text-uppercase">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><a href="/Menu">Menu</a></li>
+                <li class="breadcrumb-item text-white active" aria-current="page">Edit Order</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<!-- Feedback Alerts -->
+@if (TempData["Error"] != null)
+{
+    <div class="container">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
+}
+@if (TempData["Success"] != null)
+{
+    <div class="container">
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
+}
+
+<!-- Edit Form -->
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+            <h5 class="section-title ff-secondary text-center text-primary fw-normal">Update Your Order</h5>
+            <h1 class="mb-5" style="font-family: 'Pacifico', cursive;">Edit Order</h1>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-body">
+                        <form asp-action="Edit" asp-route-id="@ViewContext.RouteData.Values["id"]" method="post">
+                            <div class="mb-3">
+                                <label asp-for="OrderType" class="form-label"></label>
+                                <select asp-for="OrderType" class="form-select" asp-items="Model.OrderTypeOptions"></select>
+                                <span asp-validation-for="OrderType" class="text-danger"></span>
+                            </div>
+                            <div class="mb-3" id="deliveryAddressSection" style="@(Model.OrderType == OrderType.Delivery ? "" : "display: none;")">
+                                <label asp-for="DeliveryAddress" class="form-label"></label>
+                                <textarea asp-for="DeliveryAddress" class="form-control" rows="4" placeholder="Enter delivery address"></textarea>
+                                <span asp-validation-for="DeliveryAddress" class="text-danger"></span>
+                            </div>
+                            <h5 class="mt-4">Order Items</h5>
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th>Quantity</th>
+                                        <th>Price</th>
+                                        <th>Subtotal</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0; i < Model.OrderItems.Count; i++)
+                                    {
+                                        <tr>
+                                            <td>@Model.OrderItems[i].MenuItemName</td>
+                                            <td>
+                                                <input asp-for="OrderItems[i].Quantity" class="form-control" style="width: 80px;" min="1" max="10" />
+                                                <input type="hidden" asp-for="OrderItems[i].MenuItemId" />
+                                            </td>
+                                            <td>@Model.OrderItems[i].UnitPrice.ToString("C")</td>
+                                            <td>@((Model.OrderItems[i].UnitPrice * Model.OrderItems[i].Quantity).ToString("C"))</td>
+                                            <td>
+                                                <form asp-action="RemoveItem" asp-route-itemIndex="@Model.OrderItems[i].MenuItemId" asp-route-itemIndex="@i" method="post" class="d-inline">
+                                                    <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                            <div class="text-end">
+                                <strong>Estimated Total: </strong>@Model.EstimatedTotal.ToString("C")
+                                @if (Model.IsHappyHour)
+                                {
+                                    <span class="badge bg-success ms-2">Happy Hour (20% off)</span>
+                                }
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100 mt-3">Update Order</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script>
+        // Show/hide delivery address based on order type
+        $(document).ready(function () {
+            $('#OrderType').change(function () {
+                if ($(this).val() === '@OrderType.Delivery.ToString()') {
+                    $('#deliveryAddressSection').show();
+                } else {
+                    $('#deliveryAddressSection').hide();
+                    $('#DeliveryAddress').val('');
+                }
+            });
+        });
+    </script>
+}

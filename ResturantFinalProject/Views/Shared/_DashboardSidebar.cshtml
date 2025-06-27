@@ -1,0 +1,67 @@
+﻿<!-- Sidebar Toggler (Sidebar) -->
+<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+    <!-- Sidebar - Brand -->
+    <div class=" d-flex align-items-center justify-content-center">
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" asp-controller="Dashboard" asp-action="Index">
+        <div class="sidebar-brand-icon rotate-n-15">
+            <i class="fas fa-laugh-wink"></i>
+        </div>
+        <div class="sidebar-brand-text mx-3"> Admin </div>
+        <!-- Sidebar Toggler (Sidebar) -->
+    </a>
+        <div class="text-center d-none d-md-inline">
+            <button class="rounded-circle border-0" id="sidebarToggle"></button>
+        </div>
+    </div>
+    <!-- Divider -->
+    <hr class="sidebar-divider my-0">
+
+    <!-- Nav Item - Dashboard -->
+    <li class="nav-item active">
+        <a class="nav-link" asp-controller="Dashboard" asp-action="Index">
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+        </a>
+    </li>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider">
+
+    <!-- Heading -->
+    <div class="sidebar-heading">
+        Sections
+    </div>
+
+
+    <!-- Nav Item - Menu -->
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="Menu" asp-action="IndexDashboard">
+            <i class="fas fa-fw fa-table"></i>
+            <span>Menu</span>
+        </a>
+    </li>
+
+    <!-- Nav Item - Category -->
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="Category" asp-action="IndexDashboard">
+            <i class="fas fa-fw fa-table"></i>
+            <span>Category</span>
+        </a>
+    </li>
+
+    <!-- Nav Item - Order -->
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="Order" asp-action="IndexDashboard">
+            <i class="fas fa-fw fa-table"></i>
+            <span>Order</span>
+        </a>
+    </li>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider d-none d-md-block">
+
+ 
+
+
+</ul>

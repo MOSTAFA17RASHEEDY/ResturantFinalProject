@@ -1,0 +1,92 @@
+﻿@model ResturantFinalProject.ViewModels.MenuItemDetailsViewModel
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    ViewData["Title"] = "Delete Menu Item";
+}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <h1 class="h3 mb-2 text-gray-800">Delete Menu Item</h1>
+    <p class="mb-4">Are you sure you want to delete this menu item?</p>
+
+    <!-- Delete Card -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Confirm Deletion</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered text-center align-middle" width="100%" cellspacing="0">
+                    <tbody>
+                        <tr>
+                            <th><label asp-for="Id"></label></th>
+                            <td>@Model.Id</td>
+                        </tr>
+                        <tr>
+                            <th><label asp-for="Name"></label></th>
+                            <td>@Model.Name</td>
+                        </tr>
+                        <tr>
+                            <th><label asp-for="Price"></label></th>
+                            <td>@Model.Price</td>
+                        </tr>
+                        <tr>
+                            <th><label asp-for="CurrentPrice"></label></th>
+                            <td>@Model.CurrentPrice</td>
+                        </tr>
+                        <tr>
+                            <th><label asp-for="IsAvailable"></label></th>
+                            <td>@Model.IsAvailable</td>
+                        </tr>
+                        <tr>
+                            <th><label asp-for="ImageUrl"></label></th>
+                            <td>@Model.ImageUrl</td>
+                        </tr>
+                        <tr>
+                            <th><label asp-for="PreparationTimeMinutes"></label></th>
+                            <td>@Model.PreparationTimeMinutes</td>
+                        </tr>
+                        <tr>
+                            <th><label asp-for="CategoryName"></label></th>
+                            <td>@Model.CategoryName</td>
+                        </tr>
+                        <tr>
+                            <th><label asp-for="CreatedAt"></label></th>
+                            <td>@Model.CreatedAt</td>
+                        </tr>
+                        <tr>
+                            <th><label asp-for="UpdatedAt"></label></th>
+                            <td>@Model.UpdatedAt</td>
+                        </tr>
+                        <tr>
+                            <th><label asp-for="TotalOrdersToday"></label></th>
+                            <td>@Model.TotalOrdersToday</td>
+                        </tr>
+                        <tr>
+                            <th><label asp-for="IsHappyHour"></label></th>
+                            <td>@Model.IsHappyHour</td>
+                        </tr>
+                        <tr>
+                            <th><label asp-for="AvailabilityMessage"></label></th>
+                            <td>@Model.AvailabilityMessage</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <form asp-action="Delete" method="post">
+                <input asp-for="Id" type="hidden" />
+                <div class="form-group text-center mt-4">
+                    <button type="submit" class="btn btn-danger mx-2">Delete</button>
+                    <a asp-action="IndexDashboard" class="btn btn-secondary mx-2">Back to List</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+<!-- /.container-fluid -->

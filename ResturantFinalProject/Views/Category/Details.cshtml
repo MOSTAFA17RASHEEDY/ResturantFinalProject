@@ -1,0 +1,102 @@
+﻿@model ResturantFinalProject.ViewModels.CategoryDetailsViewModel
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    ViewData["Title"] = "Category Details";
+}
+
+<!-- Page Content -->
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <h2 class="h3 mb-2 text-gray-800 mb-2">
+        <h3>Category Details</h3>
+        
+            <p class="mb-4">View details of the selected category and its menu items.</p>
+            
+    </h2>
+            <!-- Details Card -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">@Model.Name</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered text-center align-middle" width="100%" cellspacing="0">
+                            <tbody>
+                                <tr>
+                                    <th><label asp-for="Id"></label></th>
+                                    <td>@Model.Id</td>
+                                </tr>
+                                <tr>
+                                    <th><label asp-for="Name"></label></th>
+                                    <td>@Model.Name</td>
+                                </tr>
+                                <tr>
+                                    <th><label asp-for="TotalMenuItems"></label></th>
+                                    <td>@Model.TotalMenuItems</td>
+                                </tr>
+                                <tr>
+                                    <th><label asp-for="ActiveMenuItems"></label></th>
+                                    <td>@Model.ActiveMenuItems</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Menu Items Section -->
+                    @if (Model.MenuItems.Any())
+                    {
+                        <h5 class="mt-4 mb-3">Menu Items</h5>
+                        <div class="table-responsive">
+                            <table class="table table-bordered text-center align-middle" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>@Html.DisplayNameFor(model => model.MenuItems.First().Id)</th>
+                                        <th>@Html.DisplayNameFor(model => model.MenuItems.First().Name)</th>
+                                        <th>@Html.DisplayNameFor(model => model.MenuItems.First().Price)</th>
+                                        <th>@Html.DisplayNameFor(model => model.MenuItems.First().IsAvailable)</th>
+                                        <th>@Html.DisplayNameFor(model => model.MenuItems.First().ImageUrl)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.MenuItems)
+                                    {
+                                        <tr>
+                                            <td>@item.Id</td>
+                                            <td>@item.Name</td>
+                                            <td>@item.Price.ToString("C")</td>
+                                            <td>@item.IsAvailable</td>
+                                            <td>
+                                                @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                                {
+                                                    <img src="@item.ImageUrl" alt="@item.Name" style="max-width: 100px;" />
+                                                }
+                                                else
+                                                {
+                                                    <span>N/A</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info mt-4">No menu items found for this category.</div>
+                    }
+
+                    <!-- Action Buttons -->
+                    <div class="form-group text-center mt-4">
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary mx-2">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger mx-2">Delete</a>
+                        <a asp-action="IndexDashboard" class="btn btn-secondary mx-2">Back to List</a>
+                    </div>
+                </div>
+            </div>
+
+</div>
+<!-- /.container-fluid -->

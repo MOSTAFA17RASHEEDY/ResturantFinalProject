@@ -1,0 +1,59 @@
+﻿@model dynamic
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Access Denied";
+}
+
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <!-- Hero Section -->
+    <div class="container-xxl py-5 bg-dark hero-header mb-5">
+        <div class="container text-center my-5 pt-5 pb-4">
+            <h1 class="display-3 text-white mb-3 animated slideInDown">Access Denied</h1>
+            <p class="mb-4">We're sorry, but access to this page is restricted.</p>
+        </div>
+    </div>
+   
+  
+
+    <!-- TempData Alerts -->
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Access Denied Card -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex align-items-center">
+            <i class="fas fa-clock text-primary mr-2"></i>
+            <h6 class="m-0 font-weight-bold text-primary">Restricted Access</h6>
+        </div>
+        <div class="card-body text-center">
+            <div class="mb-4">
+                <i class="fas fa-ban fa-3x text-danger"></i>
+            </div>
+            <h4 class="text-gray-800 mb-3">Access Denied</h4>
+            <p class="text-gray-600 mb-4">
+                This page is only accessible between <strong>9:00 AM</strong> and <strong>11:00 PM</strong> daily.
+                Please visit during our operating hours or contact us for assistance.
+            </p>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Ensure Bootstrap and Font Awesome are loaded via _DashboardLayout.cshtml -->
+}

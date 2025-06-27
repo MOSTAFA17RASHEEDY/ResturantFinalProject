@@ -1,0 +1,127 @@
+﻿@model ResturantFinalProject.ViewModels.OrderDetailsViewModel
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    ViewData["Title"] = "Order Details";
+}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <h1 class="h3 mb-2 text-gray-800">Order Details</h1>
+    <p class="mb-4">View all details for Order #@Model.Id.</p>
+
+    <!-- Order Details Card -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Order Information</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered text-center align-middle" width="100%" cellspacing="0">
+                    <tbody>
+                        <tr>
+                            <th><label asp-for="Id"></label></th>
+                            <td>@Model.Id</td>
+                        </tr>
+                        <tr>
+                            <th><label asp-for="OrderTime"></label></th>
+                            <td>@Model.OrderTime.ToString("MM/dd/yyyy HH:mm")</td>
+                        </tr>
+                        <tr>
+                            <th><label asp-for="StatusDisplay"></label></th>
+                            <td>@Model.StatusDisplay</td>
+                        </tr>
+                        <tr>
+                            <th><label asp-for="OrderTypeDisplay"></label></th>
+                            <td>@Model.OrderTypeDisplay</td>
+                        </tr>
+
+                        <tr>
+                            <th><label asp-for="DeliveryAddress"></label></th>
+                            <td>@(Model.DeliveryAddress ?? "N/A")</td>
+                        </tr>
+                        <tr>
+                            <th><label asp-for="SpecialInstructions"></label></th>
+                            <td>@(Model.SpecialInstructions ?? "N/A")</td>
+                        </tr>
+                        <tr>
+                            <th><label asp-for="Total"></label></th>
+                            <td>@Model.Total.ToString("C")</td>
+                        </tr>
+                        <tr>
+                            <th><label asp-for="DiscountAmount"></label></th>
+                            <td>@(Model.DiscountAmount?.ToString("C") ?? "N/A")</td>
+                        </tr>
+                        <tr>
+                            <th><label asp-for="EstimatedDeliveryTime"></label></th>
+                            <td>@(Model.EstimatedDeliveryTime?.ToString("MM/dd/yyyy HH:mm") ?? "N/A")</td>
+                        </tr>
+                        <tr>
+                            <th><label asp-for="ReadyTime"></label></th>
+                            <td>@(Model.ReadyTime?.ToString("MM/dd/yyyy HH:mm") ?? "N/A")</td>
+                        </tr>
+                        <tr>
+                            <th><label asp-for="DeliveredTime"></label></th>
+                            <td>@(Model.DeliveredTime?.ToString("MM/dd/yyyy HH:mm") ?? "N/A")</td>
+                        </tr>
+                        <tr>
+                            <th><label asp-for="StatusMessage"></label></th>
+                            <td>@Model.StatusMessage</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Items Card -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Order Items</h6>
+        </div>
+        <div class="card-body">
+            @if (Model.OrderItems.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered text-center align-middle" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.OrderItems.First().MenuItemName)</th>
+                                <th>@Html.DisplayNameFor(model => model.OrderItems.First().Quantity)</th>
+                                <th>@Html.DisplayNameFor(model => model.OrderItems.First().UnitPrice)</th>
+                                <th>@Html.DisplayNameFor(model => model.OrderItems.First().Subtotal)</th>
+                                
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.OrderItems)
+                            {
+                                <tr>
+                                    <td>@item.MenuItemName</td>
+                                    <td>@item.Quantity</td>
+                                    <td>@item.UnitPrice.ToString("C")</td>
+                                    <td>@item.Subtotal.ToString("C")</td>
+                                    
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info mt-4">No items found for this order.</div>
+            }
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="text-center mb-4">
+        <a asp-action="IndexDashboard" class="btn btn-secondary mx-2">Back to List</a>
+    </div>
+
+</div>
+<!-- /.container-fluid -->
